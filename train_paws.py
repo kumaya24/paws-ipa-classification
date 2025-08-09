@@ -106,15 +106,12 @@ def evaluate(model, dataloader, device):
 
 def train(train_tsv, test_tsv, mode="char", epochs=5, batch_size=32, lr=0.001):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"Using device: {device}")
     if mode == "char":
         train_dataset = PAWSDatasetChar(train_tsv)
         test_dataset = PAWSDatasetChar(test_tsv)
-        vocab_size = 65536  # full Unicode range for chars
+        vocab_size = 65536 
     elif mode == "ipa":
-        print("Building IPA vocab...")
         vocab = build_ipa_vocab(train_tsv)
-        print(f"IPA vocab size: {len(vocab)}")
         train_dataset = PAWSDatasetIPA(train_tsv, vocab)
         test_dataset = PAWSDatasetIPA(test_tsv, vocab)
         vocab_size = len(vocab) + 1
@@ -153,13 +150,9 @@ def train(train_tsv, test_tsv, mode="char", epochs=5, batch_size=32, lr=0.001):
             best_acc = test_acc
             torch.save(model.state_dict(), f"best_model_{mode}.pth")
 
-    print(f"Training complete. Best test accuracy: {best_acc:.4f}")
+    print(f"Best test accuracy: {best_acc:.4f}")
 
 if __name__ == "__main__":
-    # pass "char" or "ipa" as first arg, e.g.
-    # python train_paws.py char
-    # python train_paws.py ipa
-
     mode = sys.argv[1] if len(sys.argv) > 1 else "char"
 
     train(
